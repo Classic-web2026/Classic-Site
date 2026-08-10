@@ -25,6 +25,10 @@
     .hidden { display: none; }
     .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
+    /* Фоллбэк: если внешний styles.css не подгрузится, обеспечить читаемость */
+    body.bg { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    a { color: var(--accent); }
+
     /* Адаптивный overlay и sidebar */
     .menu-overlay {
       position: fixed; inset: 0; background: var(--overlay-bg);
@@ -149,13 +153,14 @@
   <main class="page-inner" style="padding:24px;max-width:980px;margin:0 auto;">
     <section class="hero" id="homeSection" aria-labelledby="heroTitle">
       <div class="logo-container" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <img src="Classic_Logo.png" alt="Classic" class="logo float" style="width:140px;max-width:40%;opacity:0;transform:translateY(8px) scale(.995);">
-        <h2 id="heroTitle" class="logo-text" style="color:var(--text);margin:0;" aria-hidden="false">Чем можем помочь?</h2>
+        <!-- Сделали логотип видимым по умолчанию, чтобы не было "ничего не видно" -->
+        <img src="Classic_Logo.png" alt="Classic" class="logo float" style="width:140px;max-width:40%;opacity:1;transform:none;">
+        <h2 id="heroTitle" class="logo-text" style="color:var(--text);margin:0;">Чем можем помочь?</h2>
 
         <div class="field-wrapper" style="position:relative;width:100%;max-width:640px;">
           <label for="helpInput" class="sr-only">Опишите проблему</label>
           <input id="helpInput" class="animated-input" type="text" placeholder="Опишите проблему" autocomplete="off"
-                 aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);">
+                 aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);">
 
           <div id="suggestions" class="suggestions hidden" role="listbox" aria-label="Подсказки"></div>
         </div>
@@ -173,7 +178,7 @@
             <div class="project-feature-name" style="color:var(--text);font-weight:700;">LumiTranslate</div>
             <p class="project-feature-caption" style="color:rgba(255,255,255,0.75);margin:6px 0 0 0;">Умный переводчик команды Classic — быстро и удобно.</p>
           </div>
-          <a href="https://maksimsuhomlinov37-hue.github.io/LumiTranslate/" target="_blank" rel="noopener noreferrer" class="project-feature-action" style="color:var(--accent);text-decoration:underline;">Открыть</a>
+          <a href="https://maksimsuhomlinov37-hue.github.io/LumiTranslate/" target="_blank" rel="noopener noreferrer" class="project-feature-action" style="color:var(--accent);text-decoration:underline;">Открыть LumiTranslate</a>
         </div>
       </div>
     </section>
@@ -184,19 +189,19 @@
     const suggestionsData = [
       {
         label: 'Как переводить с помощью LumiTranslate',
-        answer: '1) Перейдите на сайт LumiTranslate; 2) Вставьте или введите текст, который нужно перевести; 3) Выберите язык и нажмите "Перевести".'
+        answer: '1) Перейдите на сайт LumiTranslate; 2) Вставьте или введите текст, который нужно перевести; 3) Выберите язык и нажмите кнопку "Перевести"; 4) Скопируйте результат или загрузите файл. Если возникнут вопросы — пишите в Issues проекта на GitHub.'
       },
       {
         label: 'Что такое LumiTranslate',
-        answer: 'LumiTranslate — это инструмент быстрой локальной и онлайн-переводки, созданный командой Classic. Поддерживает несколько языков и удобный интерфейс.'
+        answer: 'LumiTranslate — это инструмент быстрой локальной и онлайн-переводки, созданный командой Classic. Поддерживает несколько языков и удобный интерфейс для пакетной обработки.'
       },
       {
         label: 'Что такое Company Classic',
-        answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX и производительность.'
+        answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX и производительность. Мы делаем сайты, приложения и инструменты для команд.'
       },
       {
         label: 'Как связаться с командой Classic',
-        answer: 'Вы можете написать нам через форму обратной связи на сайте проекта, открыть GitHub-проект и отправить issue или связаться через указанные контакты.'
+        answer: 'Вы можете написать нам через форму обратной связи на сайте проекта, открыть GitHub-проект и создать issue или отправить PR. Также можно найти контактную информацию в репозитории или на странице проекта.'
       }
     ];
 
@@ -509,16 +514,16 @@
           siteTitle.classList.add('pop-in');
 
           // Логотип
-          setTimeout(() => logoEl.classList.add('animate-in'), 150);
+          if (logoEl) setTimeout(() => logoEl.classList.add('animate-in'), 150);
 
           // Входное поле
-          setTimeout(() => input.classList.add('animate-in'), 220);
+          if (input) setTimeout(() => input.classList.add('animate-in'), 220);
 
           // Секция проектов — если видна
-          if (!projectFeature.classList.contains('hidden')) projectFeature.classList.add('animate-in');
+          if (projectFeature && !projectFeature.classList.contains('hidden')) projectFeature.classList.add('animate-in');
         } else {
           // Если пользователь предпочитает без анимаций — сразу показать
-          logoEl.style.opacity = 1; input.style.opacity = 1; answerBox.style.opacity = 1;
+          if (logoEl) logoEl.style.opacity = 1; if (input) input.style.opacity = 1; if (answerBox) answerBox.style.opacity = 1;
         }
       }
 
