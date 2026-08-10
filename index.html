@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="Classic_C_Favicon_512.png" type="image/x-icon">
+</head>
+
+<body>
+    <button id="burgerBtn" class="burger-button" aria-label="Меню">
+        <span class="burger-icon-bar"></span>
+        <span class="burger-icon-bar"></span>
+        <span class="burger-icon-bar"></span>
+    </button>
+    <div id="menuOverlay" class="menu-overlay hidden"></div>
+    <aside id="sidebar" class="sidebar hidden">
+        <button id="sidebarClose" class="sidebar-close" type="button" aria-label="Закрыть меню">×</button>
+        <div class="sidebar-top">
+            <img src="../Logo/Classic_C_Full_Horizontal.png" alt="Classic" class="sidebar-logo">
+        </div>
+        <nav class="sidebar-nav">
+            <button id="menuHome" class="sidebar-item active" type="button">Главная</button>
+            <button id="menuProjects" class="sidebar-item" type="button">Проекты</button>
+        </nav>
+    </aside>
+
+    <div class="page-inner">
+        <div class="logo-container">
+            <img src="Classic_Logo.png" alt="Classic" class="logo">
+            <p class="logo-text">Чем можем помочь?</p>
+            <div class="field-wrapper">
+                <input id="helpInput" class="animated-input" type="text" placeholder="Опишите проблему">
+                <div id="suggestions" class="suggestions hidden"></div>
+            </div>
+            <div id="answerBox" class="answer-box hidden"></div>
+        </div>
+
+        <section class="projects-section">
+            <div id="projectFeature" class="project-feature hidden">
+                <div class="project-feature-title">Наши проекты</div>
+                <div class="project-feature-main">
+                    <img src="LumiTranslate_Logo.png" alt="LumiTranslate" class="project-feature-logo">
+                    <div class="project-feature-info">
+                        <div class="project-feature-name">LumiTranslate</div>
+                        <p class="project-feature-caption">Умный переводчик созданый удобной компанией.</p>
+                    </div>
+                    <a href="https://maksimsuhomlinov37-hue.github.io/LumiTranslate/" target="_blank"
+                        class="project-feature-action">Открыть</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const suggestions = [
+            {
+                label: 'Как переводить с помощью LumiTranslate.',
+                answer: 'Переводить с переводчиком можно: 1 - перейти на сайт, 2 - написать что нужно перевести, 3 - выбрать языки с какого на какой язык переводить.'
+            },
+            {
+                label: 'Что такое LumiTranslate.',
+                answer: 'LumiTranslate — это сайт-переводчик, созданный командой Classic для быстрого перевода текста и идей.'
+            },
+            {
+                label: 'Что такое Company Classic.',
+                answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX.'
+            }
+        ];
+
+        const input = document.getElementById('helpInput');
+        const suggestionsBox = document.getElementById('suggestions');
+        const answerBox = document.getElementById('answerBox');
+
+        function showSuggestions(value) {
+            const query = value.trim().toLowerCase();
+            const filtered = suggestions.filter(item => item.label.toLowerCase().includes(query) || query.length === 0);
+            suggestionsBox.innerHTML = '';
+
+            if (!filtered.length || query.length === 0) {
+                suggestionsBox.classList.add('hidden');
+                return;
+            }
+
+            filtered.forEach(item => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'suggestion-item';
+                button.textContent = item.label;
+                button.addEventListener('click', () => {
+                    input.value = item.label;
+                    answerBox.textContent = item.answer;
+                    answerBox.classList.remove('hidden');
+                    suggestionsBox.classList.add('hidden');
+                });
+                suggestionsBox.appendChild(button);
+            });
+
+            suggestionsBox.classList.remove('hidden');
+        }
+
+        input.addEventListener('input', event => {
+            showSuggestions(event.target.value);
+            answerBox.classList.add('hidden');
+        });
+
+        input.addEventListener('focus', () => {
+            showSuggestions(input.value);
+        });
+
+        input.addEventListener('blur', () => {
+            setTimeout(() => suggestionsBox.classList.add('hidden'), 150);
+        });
+
+        const burgerBtn = document.getElementById('burgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarClose = document.getElementById('sidebarClose');
+        const overlay = document.getElementById('menuOverlay');
+        const menuHome = document.getElementById('menuHome');
+        const menuProjects = document.getElementById('menuProjects');
+        const logoContainer = document.querySelector('.logo-container');
+        const logoText = document.querySelector('.logo-text');
+        const logoImage = document.querySelector('.logo');
+        const projectFeature = document.getElementById('projectFeature');
+        const fieldWrapper = document.querySelector('.field-wrapper');
+
+        function openMenu() {
+            sidebar.classList.remove('hidden');
+            sidebar.classList.add('open');
+            overlay.classList.remove('hidden');
+            burgerBtn.classList.add('active');
+        }
+
+        function closeMenu() {
+            sidebar.classList.remove('open');
+            overlay.classList.add('hidden');
+            burgerBtn.classList.remove('active');
+            setTimeout(() => sidebar.classList.add('hidden'), 300);
+        }
+
+        function activateMenuItem(button) {
+            menuHome.classList.remove('active');
+            menuProjects.classList.remove('active');
+            button.classList.add('active');
+        }
+
+        function showHome() {
+            logoContainer.classList.remove('hidden');
+            logoText.classList.remove('hidden');
+            logoImage.classList.remove('hidden');
+            fieldWrapper.classList.remove('hidden');
+            answerBox.classList.add('hidden');
+            suggestionsBox.classList.add('hidden');
+            projectFeature.classList.add('hidden');
+        }
+
+        function showProjects() {
+            logoContainer.classList.add('hidden');
+            fieldWrapper.classList.add('hidden');
+            answerBox.classList.add('hidden');
+            suggestionsBox.classList.add('hidden');
+            projectFeature.classList.remove('hidden');
+        }
+
+        burgerBtn.addEventListener('click', openMenu);
+        sidebarClose.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+        menuHome.addEventListener('click', () => {
+            activateMenuItem(menuHome);
+            closeMenu();
+            showHome();
+        });
+        menuProjects.addEventListener('click', () => {
+            activateMenuItem(menuProjects);
+            closeMenu();
+            showProjects();
+        });
+    </script>
+</body>
+
+</html>
