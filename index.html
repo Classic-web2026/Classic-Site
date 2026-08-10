@@ -1,183 +1,488 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="Classic_C_Favicon_512.png" type="image/x-icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Classic — Чем можем помочь?</title>
+
+  <!-- основной стиль остаётся внешним -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Небольшая встроенная поддержка плавности/сброса для анимаций и доступности -->
+  <style>
+    :root {
+      --trans-dur: 280ms;
+      --overlay-bg: rgba(0,0,0,0.45);
+      --accent: #5c6cff;
+      --bg: #0f1724;
+      --card: #0b1220;
+      --text: #eef2ff;
+    }
+
+    /* Упрощённые анимации, которые дополнят внешний styles.css.
+       В production лучше перенести в styles.css и расширить. */
+    .hidden { display: none; }
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      opacity: 0;
+      transition: opacity var(--trans-dur) ease;
+      z-index: 40;
+    }
+    .menu-overlay.open { opacity: 1; }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 320px;
+      max-width: 85%;
+      background: var(--card);
+      transform: translateX(-100%);
+      transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1);
+      z-index: 50;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .burger-button {
+      --size: 44px;
+      width: var(--size);
+      height: var(--size);
+      display: inline-grid;
+      place-items: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .burger-icon-bar {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--text);
+      margin: 3px 0;
+      transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease;
+    }
+    .burger-button.active .burger-icon-bar:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+    .burger-button.active .burger-icon-bar:nth-child(2) { opacity: 0; }
+    .burger-button.active .burger-icon-bar:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+    .suggestions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin-top: 8px;
+      background: linear-gradient(180deg,#08111a,#0b1724);
+      border-radius: 10px;
+      box-shadow: 0 6px 22px rgba(2,6,23,0.6);
+      padding: 6px;
+      max-height: 260px;
+      overflow: auto;
+      z-index: 30;
+    }
+    .suggestion-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      padding: 10px 12px;
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .suggestion-item[aria-selected="true"],
+    .suggestion-item:hover { background: rgba(92,108,255,0.12); outline: none; }
+
+    .answer-box {
+      margin-top: 18px;
+      background: linear-gradient(180deg,#07101a,#09121a);
+      padding: 14px;
+      border-radius: 12px;
+      color: var(--text);
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+    }
+
+    /* Уважение к предпочтению пользователя без анимации */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
 </head>
-
-<body>
-    <button id="burgerBtn" class="burger-button" aria-label="Меню">
-        <span class="burger-icon-bar"></span>
-        <span class="burger-icon-bar"></span>
-        <span class="burger-icon-bar"></span>
+<body class="bg">
+  <header class="site-header" style="padding:12px;display:flex;align-items:center;gap:12px;">
+    <button id="burgerBtn" class="burger-button" aria-label="Открыть меню" aria-controls="sidebar" aria-expanded="false">
+      <span class="burger-icon-bar"></span>
+      <span class="burger-icon-bar"></span>
+      <span class="burger-icon-bar"></span>
     </button>
-    <div id="menuOverlay" class="menu-overlay hidden"></div>
-    <aside id="sidebar" class="sidebar hidden">
-        <button id="sidebarClose" class="sidebar-close" type="button" aria-label="Закрыть меню">×</button>
-        <div class="sidebar-top">
-            <img src="../Logo/Classic_C_Full_Horizontal.png" alt="Classic" class="sidebar-logo">
-        </div>
-        <nav class="sidebar-nav">
-            <button id="menuHome" class="sidebar-item active" type="button">Главная</button>
-            <button id="menuProjects" class="sidebar-item" type="button">Проекты</button>
-        </nav>
-    </aside>
 
-    <div class="page-inner">
-        <div class="logo-container">
-            <img src="Classic_Logo.png" alt="Classic" class="logo">
-            <p class="logo-text">Чем можем помочь?</p>
-            <div class="field-wrapper">
-                <input id="helpInput" class="animated-input" type="text" placeholder="Опишите проблему">
-                <div id="suggestions" class="suggestions hidden"></div>
-            </div>
-            <div id="answerBox" class="answer-box hidden"></div>
-        </div>
+    <h1 style="font-size:1rem;margin:0;color:var(--text)">Classic — Чем можем помочь?</h1>
+  </header>
 
-        <section class="projects-section">
-            <div id="projectFeature" class="project-feature hidden">
-                <div class="project-feature-title">Наши проекты</div>
-                <div class="project-feature-main">
-                    <img src="LumiTranslate_Logo.png" alt="LumiTranslate" class="project-feature-logo">
-                    <div class="project-feature-info">
-                        <div class="project-feature-name">LumiTranslate</div>
-                        <p class="project-feature-caption">Умный переводчик созданый удобной компанией.</p>
-                    </div>
-                    <a href="https://maksimsuhomlinov37-hue.github.io/LumiTranslate/" target="_blank"
-                        class="project-feature-action">Открыть</a>
-                </div>
-            </div>
-        </section>
+  <div id="menuOverlay" class="menu-overlay hidden" tabindex="-1" aria-hidden="true"></div>
+
+  <aside id="sidebar" class="sidebar hidden" aria-hidden="true" role="dialog" aria-label="Главное меню">
+    <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;">
+      <img src="../Logo/Classic_C_Full_Horizontal.png" alt="Classic" class="sidebar-logo" style="height:36px">
+      <button id="sidebarClose" class="sidebar-close" type="button" aria-label="Закрыть меню">×</button>
     </div>
 
-    <script>
-        const suggestions = [
-            {
-                label: 'Как переводить с помощью LumiTranslate.',
-                answer: 'Переводить с переводчиком можно: 1 - перейти на сайт, 2 - написать что нужно перевести, 3 - выбрать языки с какого на какой язык переводить.'
-            },
-            {
-                label: 'Что такое LumiTranslate.',
-                answer: 'LumiTranslate — это сайт-переводчик, созданный командой Classic для быстрого перевода текста и идей.'
-            },
-            {
-                label: 'Что такое Company Classic.',
-                answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX.'
-            }
-        ];
+    <nav class="sidebar-nav" style="display:flex;flex-direction:column;gap:6px;padding:12px;">
+      <button id="menuHome" class="sidebar-item active" type="button" aria-pressed="true">Главная</button>
+      <button id="menuProjects" class="sidebar-item" type="button" aria-pressed="false">Проекты</button>
+    </nav>
+  </aside>
 
-        const input = document.getElementById('helpInput');
-        const suggestionsBox = document.getElementById('suggestions');
-        const answerBox = document.getElementById('answerBox');
+  <main class="page-inner" style="padding:24px;max-width:980px;margin:0 auto;">
+    <section class="hero" id="homeSection" aria-labelledby="heroTitle">
+      <div class="logo-container" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <img src="Classic_Logo.png" alt="Classic" class="logo" style="width:140px;max-width:40%;">
+        <h2 id="heroTitle" class="logo-text" style="color:var(--text);margin:0;">Чем можем помочь?</h2>
 
-        function showSuggestions(value) {
-            const query = value.trim().toLowerCase();
-            const filtered = suggestions.filter(item => item.label.toLowerCase().includes(query) || query.length === 0);
-            suggestionsBox.innerHTML = '';
+        <div class="field-wrapper" style="position:relative;width:100%;max-width:640px;">
+          <label for="helpInput" class="sr-only">Опишите проблему</label>
+          <input id="helpInput" class="animated-input" type="text" placeholder="Опишите проблему" autocomplete="off"
+                 aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);">
+          <div id="suggestions" class="suggestions hidden" role="listbox" aria-label="Подсказки"></div>
+        </div>
 
-            if (!filtered.length || query.length === 0) {
-                suggestionsBox.classList.add('hidden');
-                return;
-            }
+        <div id="answerBox" class="answer-box hidden" role="region" aria-live="polite"></div>
+      </div>
+    </section>
 
-            filtered.forEach(item => {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'suggestion-item';
-                button.textContent = item.label;
-                button.addEventListener('click', () => {
-                    input.value = item.label;
-                    answerBox.textContent = item.answer;
-                    answerBox.classList.remove('hidden');
-                    suggestionsBox.classList.add('hidden');
-                });
-                suggestionsBox.appendChild(button);
-            });
+    <section class="projects-section" id="projectsSection" aria-hidden="true" style="margin-top:28px;">
+      <div id="projectFeature" class="project-feature hidden" style="max-width:720px;margin:0 auto;">
+        <div class="project-feature-title" style="color:var(--text);font-weight:600;margin-bottom:8px;">Наши проекты</div>
+        <div class="project-feature-main" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;">
+          <img src="LumiTranslate_Logo.png" alt="LumiTranslate" class="project-feature-logo" style="height:68px;">
+          <div class="project-feature-info" style="flex:1;">
+            <div class="project-feature-name" style="color:var(--text);font-weight:700;">LumiTranslate</div>
+            <p class="project-feature-caption" style="color:rgba(255,255,255,0.75);margin:6px 0 0 0;">Умный переводчик команды Classic — быстро и удобно.</p>
+          </div>
+          <a href="https://maksimsuhomlinov37-hue.github.io/LumiTranslate/" target="_blank" rel="noopener noreferrer" class="project-feature-action" style="color:var(--accent);text-decoration:underline;">Открыть</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
-            suggestionsBox.classList.remove('hidden');
+  <script type="module">
+    // Модуль ES — современный, изолированный код.
+    const suggestionsData = [
+      {
+        label: 'Как переводить с помощью LumiTranslate',
+        answer: '1) Перейдите на сайт LumiTranslate; 2) Вставьте или введите текст, который нужно перевести; 3) Выберите язык (входящий/исходящий) и нажмите Перевести. Поддерживаются быстрые подсказки и история переводов.'
+      },
+      {
+        label: 'Что такое LumiTranslate',
+        answer: 'LumiTranslate — это инструмент быстрой локальной и онлайн-переводки, созданный командой Classic. Он сочетает простоту интерфейса и быстрый отклик для повседневного использования.'
+      },
+      {
+        label: 'Что такое Company Classic',
+        answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX и производительность. Мы проектируем интерфейсы, которые нравятся людям и работают быстро.'
+      },
+      {
+        label: 'Как связаться с командой Classic',
+        answer: 'Вы можете написать нам через форму обратной связи на сайте проекта или открыть GitHub-проект и отправить issue. Мы отвечаем в рабочее время и ценим подробные запросы.'
+      }
+    ];
+
+    // Утилиты
+    const el = (sel, ctx = document) => ctx.querySelector(sel);
+    const create = (tag, props = {}) => Object.assign(document.createElement(tag), props);
+
+    // Дебаунс для ввода
+    function debounce(fn, wait = 200) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), wait);
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = el('#helpInput');
+      const suggestionsBox = el('#suggestions');
+      const answerBox = el('#answerBox');
+      const burgerBtn = el('#burgerBtn');
+      const sidebar = el('#sidebar');
+      const sidebarClose = el('#sidebarClose');
+      const overlay = el('#menuOverlay');
+      const menuHome = el('#menuHome');
+      const menuProjects = el('#menuProjects');
+      const projectFeature = el('#projectFeature');
+      const homeSection = el('#homeSection');
+      const projectsSection = el('#projectsSection');
+
+      // Доступность: отслеживаем поддерживает ли пользователь reduced motion
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Считываем данные подсказок
+      function filterSuggestions(query) {
+        const q = (query || '').trim().toLowerCase();
+        if (!q) return suggestionsData.slice(0, 6); // популярные/первые
+        return suggestionsData.filter(s => s.label.toLowerCase().includes(q)).slice(0, 8);
+      }
+
+      // Рендер подсказок (используем role=listbox/option)
+      function renderSuggestions(items) {
+        suggestionsBox.innerHTML = '';
+        if (!items.length) {
+          suggestionsBox.classList.add('hidden');
+          input.setAttribute('aria-expanded', 'false');
+          return;
         }
 
-        input.addEventListener('input', event => {
-            showSuggestions(event.target.value);
-            answerBox.classList.add('hidden');
+        items.forEach((item, index) => {
+          const btn = create('button', {
+            type: 'button',
+            className: 'suggestion-item',
+            textContent: item.label,
+          });
+          btn.setAttribute('role', 'option');
+          btn.dataset.index = index;
+          btn.addEventListener('click', () => selectSuggestion(item, btn));
+          btn.addEventListener('keydown', (e) => {
+            // Перенос навигации на клавиатуре внутри списка
+            if (e.key === 'ArrowDown') { focusNextSuggestion(btn); e.preventDefault(); }
+            if (e.key === 'ArrowUp') { focusPrevSuggestion(btn); e.preventDefault(); }
+            if (e.key === 'Enter') { selectSuggestion(item, btn); e.preventDefault(); }
+            if (e.key === 'Escape') { hideSuggestions(); input.focus(); }
+          });
+          suggestionsBox.appendChild(btn);
         });
 
-        input.addEventListener('focus', () => {
-            showSuggestions(input.value);
+        suggestionsBox.classList.remove('hidden');
+        input.setAttribute('aria-expanded', 'true');
+      }
+
+      function focusNextSuggestion(current) {
+        const list = Array.from(suggestionsBox.querySelectorAll('.suggestion-item'));
+        if (!list.length) return;
+        const i = list.indexOf(current);
+        const next = list[(i + 1) % list.length];
+        next.focus();
+      }
+      function focusPrevSuggestion(current) {
+        const list = Array.from(suggestionsBox.querySelectorAll('.suggestion-item'));
+        if (!list.length) return;
+        const i = list.indexOf(current);
+        const prev = list[(i - 1 + list.length) % list.length];
+        prev.focus();
+      }
+
+      function selectSuggestion(item, btn = null) {
+        input.value = item.label;
+        showAnswer(item.answer);
+        hideSuggestions();
+        input.setAttribute('aria-expanded', 'false');
+        if (btn) btn.setAttribute('aria-selected', 'true');
+        input.focus();
+      }
+
+      function showAnswer(text) {
+        answerBox.textContent = text;
+        answerBox.classList.remove('hidden');
+      }
+
+      function hideSuggestions() {
+        suggestionsBox.classList.add('hidden');
+        input.setAttribute('aria-expanded', 'false');
+      }
+
+      // Обработчик ввода с дебаунсом
+      const onInput = debounce((value) => {
+        const items = filterSuggestions(value);
+        renderSuggestions(items);
+      }, 160);
+
+      input.addEventListener('input', (e) => {
+        answerBox.classList.add('hidden');
+        onInput(e.target.value);
+      });
+
+      // Фокус/клавиатура: стрелки на элементе input открывают подсказки
+      input.addEventListener('keydown', (e) => {
+        const visible = !suggestionsBox.classList.contains('hidden');
+        if (e.key === 'ArrowDown') {
+          if (!visible) renderSuggestions(filterSuggestions(input.value));
+          const first = suggestionsBox.querySelector('.suggestion-item');
+          if (first) first.focus();
+          e.preventDefault();
+        }
+        if (e.key === 'Escape') {
+          hideSuggestions();
+          input.blur();
+        }
+        if (e.key === 'Enter') {
+          // Если подсказок нет — можно использовать первый совпадающий ответ автоматически
+          const items = filterSuggestions(input.value);
+          if (items.length === 1) {
+            selectSuggestion(items[0]);
+            e.preventDefault();
+          }
+        }
+      });
+
+      input.addEventListener('focus', () => {
+        const items = filterSuggestions(input.value);
+        if (items.length) renderSuggestions(items);
+      });
+
+      input.addEventListener('blur', () => {
+        // небольшая задержка чтобы обработать клик по подсказке
+        setTimeout(() => hideSuggestions(), 120);
+      });
+
+      // ===================== Sidebar (доступный) =====================
+      function openSidebar() {
+        sidebar.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          sidebar.classList.add('open');
+          overlay.classList.add('open');
         });
 
-        input.addEventListener('blur', () => {
-            setTimeout(() => suggestionsBox.classList.add('hidden'), 150);
-        });
+        burgerBtn.classList.add('active');
+        burgerBtn.setAttribute('aria-expanded', 'true');
+        sidebar.setAttribute('aria-hidden', 'false');
+        overlay.setAttribute('aria-hidden', 'false');
 
-        const burgerBtn = document.getElementById('burgerBtn');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarClose = document.getElementById('sidebarClose');
-        const overlay = document.getElementById('menuOverlay');
-        const menuHome = document.getElementById('menuHome');
-        const menuProjects = document.getElementById('menuProjects');
-        const logoContainer = document.querySelector('.logo-container');
-        const logoText = document.querySelector('.logo-text');
-        const logoImage = document.querySelector('.logo');
-        const projectFeature = document.getElementById('projectFeature');
-        const fieldWrapper = document.querySelector('.field-wrapper');
+        // Фокус на первый элемент меню
+        const first = sidebar.querySelector('.sidebar-item');
+        if (first) first.focus();
 
-        function openMenu() {
-            sidebar.classList.remove('hidden');
-            sidebar.classList.add('open');
-            overlay.classList.remove('hidden');
-            burgerBtn.classList.add('active');
+        // Включаем ловушку фокуса
+        trapFocus(sidebar);
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+        burgerBtn.classList.remove('active');
+        burgerBtn.setAttribute('aria-expanded', 'false');
+
+        overlay.setAttribute('aria-hidden', 'true');
+        sidebar.setAttribute('aria-hidden', 'true');
+
+        // Скрываем после анимации
+        setTimeout(() => {
+          if (!sidebar.classList.contains('open')) sidebar.classList.add('hidden');
+          if (!overlay.classList.contains('open')) overlay.classList.add('hidden');
+        }, 320);
+
+        // Убираем ловушку фокуса (она сама прекратит работать после закрытия)
+        releaseFocusTrap();
+
+        // Вернуть фокус на кнопку
+        burgerBtn.focus();
+      }
+
+      burgerBtn.addEventListener('click', () => {
+        const expanded = burgerBtn.getAttribute('aria-expanded') === 'true';
+        if (expanded) closeSidebar(); else openSidebar();
+      });
+      sidebarClose.addEventListener('click', closeSidebar);
+      overlay.addEventListener('click', closeSidebar);
+
+      // Закрытие ESC глобально
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          // Закрыть меню или подсказки
+          if (!sidebar.classList.contains('hidden') && sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            hideSuggestions();
+          }
         }
+      });
 
-        function closeMenu() {
-            sidebar.classList.remove('open');
-            overlay.classList.add('hidden');
-            burgerBtn.classList.remove('active');
-            setTimeout(() => sidebar.classList.add('hidden'), 300);
+      // Меню пункты
+      function activateMenuItem(button) {
+        menuHome.classList.remove('active');
+        menuProjects.classList.remove('active');
+        menuHome.setAttribute('aria-pressed', 'false');
+        menuProjects.setAttribute('aria-pressed', 'false');
+
+        button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
+      }
+
+      function showHome() {
+        homeSection.removeAttribute('hidden');
+        projectsSection.setAttribute('aria-hidden', 'true');
+        projectFeature.classList.add('hidden');
+      }
+
+      function showProjects() {
+        homeSection.setAttribute('aria-hidden', 'true');
+        projectsSection.removeAttribute('aria-hidden');
+        projectFeature.classList.remove('hidden');
+      }
+
+      menuHome.addEventListener('click', () => {
+        activateMenuItem(menuHome);
+        closeSidebar();
+        showHome();
+      });
+
+      menuProjects.addEventListener('click', () => {
+        activateMenuItem(menuProjects);
+        closeSidebar();
+        showProjects();
+      });
+
+      // ===================== Focus trap для sidebar =====================
+      let prevFocused = null;
+      let focusTrap = null;
+
+      function trapFocus(container) {
+        prevFocused = document.activeElement;
+        const focusableSelector = [
+          'a[href]',
+          'area[href]',
+          'input:not([disabled])',
+          'select:not([disabled])',
+          'textarea:not([disabled])',
+          'button:not([disabled])',
+          'iframe',
+          '[tabindex]:not([tabindex="-1"])'
+        ].join(',');
+
+        const nodes = Array.from(container.querySelectorAll(focusableSelector));
+        if (!nodes.length) return;
+
+        const first = nodes[0], last = nodes[nodes.length - 1];
+        focusTrap = (e) => {
+          if (e.key !== 'Tab') return;
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        };
+        document.addEventListener('keydown', focusTrap);
+      }
+
+      function releaseFocusTrap() {
+        if (focusTrap) {
+          document.removeEventListener('keydown', focusTrap);
+          focusTrap = null;
         }
-
-        function activateMenuItem(button) {
-            menuHome.classList.remove('active');
-            menuProjects.classList.remove('active');
-            button.classList.add('active');
+        if (prevFocused) {
+          prevFocused.focus();
+          prevFocused = null;
         }
+      }
 
-        function showHome() {
-            logoContainer.classList.remove('hidden');
-            logoText.classList.remove('hidden');
-            logoImage.classList.remove('hidden');
-            fieldWrapper.classList.remove('hidden');
-            answerBox.classList.add('hidden');
-            suggestionsBox.classList.add('hidden');
-            projectFeature.classList.add('hidden');
-        }
-
-        function showProjects() {
-            logoContainer.classList.add('hidden');
-            fieldWrapper.classList.add('hidden');
-            answerBox.classList.add('hidden');
-            suggestionsBox.classList.add('hidden');
-            projectFeature.classList.remove('hidden');
-        }
-
-        burgerBtn.addEventListener('click', openMenu);
-        sidebarClose.addEventListener('click', closeMenu);
-        overlay.addEventListener('click', closeMenu);
-        menuHome.addEventListener('click', () => {
-            activateMenuItem(menuHome);
-            closeMenu();
-            showHome();
-        });
-        menuProjects.addEventListener('click', () => {
-            activateMenuItem(menuProjects);
-            closeMenu();
-            showProjects();
-        });
-    </script>
+      // Инициализация — прячем секции, показываем главную
+      showHome();
+    });
+  </script>
 </body>
-
 </html>
