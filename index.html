@@ -9,106 +9,115 @@
   <!-- основной стиль остаётся внешним -->
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Небольшая встроенная поддержка плавности/сброса для анимаций и доступности -->
+  <!-- Встроенные стили для анимаций и современных эффектов -->
   <style>
     :root {
-      --trans-dur: 280ms;
+      --trans-dur: 360ms;
       --overlay-bg: rgba(0,0,0,0.45);
       --accent: #5c6cff;
       --bg: #0f1724;
       --card: #0b1220;
       --text: #eef2ff;
+      --muted: rgba(255,255,255,0.65);
     }
 
-    /* Упрощённые анимации, которые дополнят внешний styles.css.
-       В production лучше перенести в styles.css и расширить. */
+    /* Базовые утилиты */
     .hidden { display: none; }
+    .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* Адаптивный overlay и sidebar */
     .menu-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--overlay-bg);
-      opacity: 0;
-      transition: opacity var(--trans-dur) ease;
-      z-index: 40;
+      position: fixed; inset: 0; background: var(--overlay-bg);
+      opacity: 0; transition: opacity var(--trans-dur) ease; z-index: 40;
+      will-change: opacity;
     }
     .menu-overlay.open { opacity: 1; }
 
     .sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 320px;
-      max-width: 85%;
-      background: var(--card);
-      transform: translateX(-100%);
+      position: fixed; left: 0; top: 0; bottom: 0; width: 320px; max-width: 85%;
+      background: var(--card); transform: translateX(-100%);
       transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1);
-      z-index: 50;
-      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      z-index: 50; box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      will-change: transform, opacity;
     }
     .sidebar.open { transform: translateX(0); }
 
     .burger-button {
-      --size: 44px;
-      width: var(--size);
-      height: var(--size);
-      display: inline-grid;
-      place-items: center;
-      background: transparent;
-      border: none;
-      cursor: pointer;
+      --size: 44px; width: var(--size); height: var(--size); display: inline-grid; place-items: center;
+      background: transparent; border: none; cursor: pointer;
     }
-    .burger-icon-bar {
-      display: block;
-      width: 20px;
-      height: 2px;
-      background: var(--text);
-      margin: 3px 0;
-      transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease;
-    }
+    .burger-icon-bar { display: block; width: 20px; height: 2px; background: var(--text); margin: 3px 0; transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease; }
     .burger-button.active .burger-icon-bar:nth-child(1) { transform: translateY(5px) rotate(45deg); }
     .burger-button.active .burger-icon-bar:nth-child(2) { opacity: 0; }
     .burger-button.active .burger-icon-bar:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
 
+    /* Suggestions и карточки ответов */
     .suggestions {
-      position: absolute;
-      left: 0;
-      right: 0;
-      margin-top: 8px;
-      background: linear-gradient(180deg,#08111a,#0b1724);
-      border-radius: 10px;
-      box-shadow: 0 6px 22px rgba(2,6,23,0.6);
-      padding: 6px;
-      max-height: 260px;
-      overflow: auto;
-      z-index: 30;
+      position: absolute; left: 0; right: 0; margin-top: 8px;
+      background: linear-gradient(180deg,#08111a,#0b1724); border-radius: 10px;
+      box-shadow: 0 6px 22px rgba(2,6,23,0.6); padding: 6px; max-height: 260px; overflow: auto; z-index: 30;
+      transform-origin: top center; opacity: 0; transform: translateY(8px) scale(.995);
+      transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1), opacity calc(var(--trans-dur) * 1.1) ease;
     }
+    .suggestions.visible { opacity: 1; transform: translateY(0) scale(1); }
+
     .suggestion-item {
-      display: block;
-      width: 100%;
-      text-align: left;
-      background: transparent;
-      border: none;
-      padding: 10px 12px;
-      color: var(--text);
-      border-radius: 8px;
-      cursor: pointer;
+      display: block; width: 100%; text-align: left; background: transparent; border: none;
+      padding: 10px 12px; color: var(--text); border-radius: 8px; cursor: pointer; transform-origin: left center;
+      opacity: 0; transform: translateX(-8px) scale(.995); transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease;
+      will-change: transform, opacity;
     }
-    .suggestion-item[aria-selected="true"],
-    .suggestion-item:hover { background: rgba(92,108,255,0.12); outline: none; }
+    .suggestion-item[aria-selected="true"], .suggestion-item:hover { background: rgba(92,108,255,0.12); outline: none; }
+    .suggestion-item.animate-in { opacity: 1; transform: translateX(0) scale(1); }
 
     .answer-box {
-      margin-top: 18px;
-      background: linear-gradient(180deg,#07101a,#09121a);
-      padding: 14px;
-      border-radius: 12px;
-      color: var(--text);
-      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      margin-top: 18px; background: linear-gradient(180deg,#07101a,#09121a); padding: 14px; border-radius: 12px; color: var(--text);
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6); transform-origin: center; opacity: 0; transform: translateY(8px) scale(.995);
+      transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1), opacity calc(var(--trans-dur) * 1.05) ease; will-change: opacity, transform;
     }
+    .answer-box.animate-in { opacity: 1; transform: translateY(0) scale(1); }
 
-    /* Уважение к предпочтению пользователя без анимации */
+    /* Hero / logo */
+    .logo { transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease; will-change: transform, opacity; }
+    .logo.animate-in { opacity: 1; transform: translateY(0) scale(1); }
+
+    /* Project feature card */
+    .project-feature { transform-origin: center; opacity: 0; transform: translateY(12px) scale(.995); transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease; }
+    .project-feature.animate-in { opacity: 1; transform: translateY(0) scale(1); }
+
+    /* Small float effect for logos and accents */
+    @keyframes floatY {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+    .float { animation: floatY 4s ease-in-out infinite; }
+
+    /* Pop-in for header/title */
+    @keyframes popIn {
+      0% { transform: translateY(8px) scale(.98); opacity: 0; }
+      60% { transform: translateY(-4px) scale(1.01); opacity: 1; }
+      100% { transform: translateY(0) scale(1); }
+    }
+    .pop-in { animation: popIn calc(var(--trans-dur) * 1.6) cubic-bezier(.2,.9,.25,1) both; }
+
+    /* Stagger helper — каждый элемент получает задержку через --i */
+    .stagger-child { transition-delay: calc(var(--i, 0) * 60ms); }
+
+    /* Modern subtle focus styles */
+    :focus { outline: none; box-shadow: 0 0 0 4px rgba(92,108,255,0.12); border-radius: 8px; }
+
+    /* Respect user's reduced motion preference */
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
+      .suggestions, .answer-box, .project-feature, .logo { opacity: 1 !important; transform: none !important; }
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 640px) {
+      .sidebar { width: 84%; }
+      .logo { width: 120px; }
+      .project-feature-main { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -120,7 +129,7 @@
       <span class="burger-icon-bar"></span>
     </button>
 
-    <h1 style="font-size:1rem;margin:0;color:var(--text)">Classic — Чем можем помочь?</h1>
+    <h1 id="siteTitle" style="font-size:1rem;margin:0;color:var(--text)" class="pop-in">Classic — Чем можем помочь?</h1>
   </header>
 
   <div id="menuOverlay" class="menu-overlay hidden" tabindex="-1" aria-hidden="true"></div>
@@ -140,13 +149,14 @@
   <main class="page-inner" style="padding:24px;max-width:980px;margin:0 auto;">
     <section class="hero" id="homeSection" aria-labelledby="heroTitle">
       <div class="logo-container" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <img src="Classic_Logo.png" alt="Classic" class="logo" style="width:140px;max-width:40%;">
-        <h2 id="heroTitle" class="logo-text" style="color:var(--text);margin:0;">Чем можем помочь?</h2>
+        <img src="Classic_Logo.png" alt="Classic" class="logo float" style="width:140px;max-width:40%;opacity:0;transform:translateY(8px) scale(.995);">
+        <h2 id="heroTitle" class="logo-text" style="color:var(--text);margin:0;" aria-hidden="false">Чем можем помочь?</h2>
 
         <div class="field-wrapper" style="position:relative;width:100%;max-width:640px;">
           <label for="helpInput" class="sr-only">Опишите проблему</label>
           <input id="helpInput" class="animated-input" type="text" placeholder="Опишите проблему" autocomplete="off"
                  aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);">
+
           <div id="suggestions" class="suggestions hidden" role="listbox" aria-label="Подсказки"></div>
         </div>
 
@@ -174,19 +184,19 @@
     const suggestionsData = [
       {
         label: 'Как переводить с помощью LumiTranslate',
-        answer: '1) Перейдите на сайт LumiTranslate; 2) Вставьте или введите текст, который нужно перевести; 3) Выберите язык (входящий/исходящий) и нажмите Перевести. Поддерживаются быстрые подсказки и история переводов.'
+        answer: '1) Перейдите на сайт LumiTranslate; 2) Вставьте или введите текст, который нужно перевести; 3) Выберите язык и нажмите "Перевести".'
       },
       {
         label: 'Что такое LumiTranslate',
-        answer: 'LumiTranslate — это инструмент быстрой локальной и онлайн-переводки, созданный командой Classic. Он сочетает простоту интерфейса и быстрый отклик для повседневного использования.'
+        answer: 'LumiTranslate — это инструмент быстрой локальной и онлайн-переводки, созданный командой Classic. Поддерживает несколько языков и удобный интерфейс.'
       },
       {
         label: 'Что такое Company Classic',
-        answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX и производительность. Мы проектируем интерфейсы, которые нравятся людям и работают быстро.'
+        answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX и производительность.'
       },
       {
         label: 'Как связаться с командой Classic',
-        answer: 'Вы можете написать нам через форму обратной связи на сайте проекта или открыть GitHub-проект и отправить issue. Мы отвечаем в рабочее время и ценим подробные запросы.'
+        answer: 'Вы можете написать нам через форму обратной связи на сайте проекта, открыть GitHub-проект и отправить issue или связаться через указанные контакты.'
       }
     ];
 
@@ -216,6 +226,8 @@
       const projectFeature = el('#projectFeature');
       const homeSection = el('#homeSection');
       const projectsSection = el('#projectsSection');
+      const logoEl = el('.logo');
+      const siteTitle = el('#siteTitle');
 
       // Доступность: отслеживаем поддерживает ли пользователь reduced motion
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -231,6 +243,7 @@
       function renderSuggestions(items) {
         suggestionsBox.innerHTML = '';
         if (!items.length) {
+          suggestionsBox.classList.remove('visible');
           suggestionsBox.classList.add('hidden');
           input.setAttribute('aria-expanded', 'false');
           return;
@@ -239,11 +252,14 @@
         items.forEach((item, index) => {
           const btn = create('button', {
             type: 'button',
-            className: 'suggestion-item',
+            className: 'suggestion-item stagger-child',
             textContent: item.label,
           });
           btn.setAttribute('role', 'option');
           btn.dataset.index = index;
+          // Задаём индивидуальную задержку для каждого элемента
+          btn.style.setProperty('--i', index);
+
           btn.addEventListener('click', () => selectSuggestion(item, btn));
           btn.addEventListener('keydown', (e) => {
             // Перенос навигации на клавиатуре внутри списка
@@ -252,10 +268,19 @@
             if (e.key === 'Enter') { selectSuggestion(item, btn); e.preventDefault(); }
             if (e.key === 'Escape') { hideSuggestions(); input.focus(); }
           });
+
           suggestionsBox.appendChild(btn);
+
+          // Анимация появления с небольшой задержкой
+          requestAnimationFrame(() => {
+            btn.classList.add('animate-in');
+          });
         });
 
         suggestionsBox.classList.remove('hidden');
+        // Даем класс visible для общего контейнера
+        requestAnimationFrame(() => suggestionsBox.classList.add('visible'));
+
         input.setAttribute('aria-expanded', 'true');
       }
 
@@ -286,11 +311,15 @@
       function showAnswer(text) {
         answerBox.textContent = text;
         answerBox.classList.remove('hidden');
+        // Анимация показа
+        requestAnimationFrame(() => answerBox.classList.add('animate-in'));
       }
 
       function hideSuggestions() {
-        suggestionsBox.classList.add('hidden');
+        suggestionsBox.classList.remove('visible');
         input.setAttribute('aria-expanded', 'false');
+        // Скрываем с анимацией
+        setTimeout(() => suggestionsBox.classList.add('hidden'), 220);
       }
 
       // Обработчик ввода с дебаунсом
@@ -301,6 +330,7 @@
 
       input.addEventListener('input', (e) => {
         answerBox.classList.add('hidden');
+        answerBox.classList.remove('animate-in');
         onInput(e.target.value);
       });
 
@@ -442,14 +472,8 @@
       function trapFocus(container) {
         prevFocused = document.activeElement;
         const focusableSelector = [
-          'a[href]',
-          'area[href]',
-          'input:not([disabled])',
-          'select:not([disabled])',
-          'textarea:not([disabled])',
-          'button:not([disabled])',
-          'iframe',
-          '[tabindex]:not([tabindex="-1"])'
+          'a[href]', 'area[href]', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])',
+          'button:not([disabled])', 'iframe', '[tabindex]:not([tabindex="-1"])'
         ].join(',');
 
         const nodes = Array.from(container.querySelectorAll(focusableSelector));
@@ -459,11 +483,9 @@
         focusTrap = (e) => {
           if (e.key !== 'Tab') return;
           if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
+            e.preventDefault(); last.focus();
           } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
+            e.preventDefault(); first.focus();
           }
         };
         document.addEventListener('keydown', focusTrap);
@@ -475,13 +497,52 @@
           focusTrap = null;
         }
         if (prevFocused) {
-          prevFocused.focus();
-          prevFocused = null;
+          prevFocused.focus(); prevFocused = null;
         }
+      }
+
+      // ===================== ANIMATIONS INIT =====================
+      // Показываем элементы с анимацией при загрузке и при появлении в viewport
+      function animateOnLoad() {
+        if (!reduceMotion) {
+          // Поп — заголовок
+          siteTitle.classList.add('pop-in');
+
+          // Логотип
+          setTimeout(() => logoEl.classList.add('animate-in'), 150);
+
+          // Входное поле
+          setTimeout(() => input.classList.add('animate-in'), 220);
+
+          // Секция проектов — если видна
+          if (!projectFeature.classList.contains('hidden')) projectFeature.classList.add('animate-in');
+        } else {
+          // Если пользователь предпочитает без анимаций — сразу показать
+          logoEl.style.opacity = 1; input.style.opacity = 1; answerBox.style.opacity = 1;
+        }
+      }
+
+      // Intersection observer для ленивой анимации при scroll
+      if (!reduceMotion && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('animate-in');
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.18 });
+
+        // Наблюдаем за карточкой проекта и за ответом
+        const toObserve = [projectFeature, answerBox, logoEl];
+        toObserve.forEach(node => { if (node) io.observe(node); });
       }
 
       // Инициализация — прячем секции, показываем главную
       showHome();
+      // Запускаем стартовые анимации
+      requestAnimationFrame(animateOnLoad);
+
     });
   </script>
 </body>
