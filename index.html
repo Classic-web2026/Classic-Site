@@ -1,554 +1,494 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0b1220" />
-  <title>Classic — Чем можем помочь?</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>С Днём Рождения, Алина! 💜</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <!-- основной стиль остаётся внешним -->
-  <link rel="stylesheet" href="styles.css">
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    overflow-x: hidden;
+    background: #000;
+    color: #fff;
+    min-height: 100vh;
+    cursor: default;
+  }
 
-  <!-- Встроенные стили для анимаций и современных эффектов -->
-  <style>
-    :root {
-      --trans-dur: 360ms;
-      --overlay-bg: rgba(0,0,0,0.45);
-      --accent: #5c6cff;
-      --bg: #0f1724;
-      --card: #0b1220;
-      --text: #eef2ff;
-      --muted: rgba(255,255,255,0.65);
-    }
+  /* Анимированный фон */
+  .bg {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #000000, #1a0033, #2d0060, #000000);
+    background-size: 400% 400%;
+    animation: bgShift 15s ease infinite;
+    z-index: -3;
+  }
 
-    /* Базовые утилиты */
-    .hidden { display: none; }
-    .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  @keyframes bgShift {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
 
-    /* Фоллбэк: если внешний styles.css не подгрузится, обеспечить читаемость */
-    body.bg { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-    a { color: var(--accent); }
+  /* Звёзды */
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #b76bff, 0 0 20px #b76bff;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
 
-    /* Адаптивный overlay и sidebar */
-    .menu-overlay {
-      position: fixed; inset: 0; background: var(--overlay-bg);
-      opacity: 0; transition: opacity var(--trans-dur) ease; z-index: 40;
-      will-change: opacity;
-    }
-    .menu-overlay.open { opacity: 1; }
+  /* Плавающие шары */
+  .balloon {
+    position: fixed;
+    bottom: -150px;
+    width: 60px;
+    height: 75px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: -1;
+    opacity: 0.8;
+    animation: float 12s linear infinite;
+  }
+  .balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    width: 2px;
+    height: 25px;
+    background: rgba(255,255,255,0.6);
+    transform: translateX(-50%);
+  }
+  @keyframes float {
+    to { transform: translateY(-120vh) rotate(20deg); }
+  }
 
-    .sidebar {
-      position: fixed; left: 0; top: 0; bottom: 0; width: 320px; max-width: 85%;
-      background: var(--card); transform: translateX(-100%);
-      transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1);
-      z-index: 50; box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-      will-change: transform, opacity;
-    }
-    .sidebar.open { transform: translateX(0); }
+  /* Главный контейнер */
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+    min-height: 100vh;
+    justify-content: center;
+  }
 
-    .burger-button {
-      --size: 44px; width: var(--size); height: var(--size); display: inline-grid; place-items: center;
-      background: transparent; border: none; cursor: pointer;
-    }
-    .burger-icon-bar { display: block; width: 20px; height: 2px; background: var(--text); margin: 3px 0; transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease; }
-    .burger-button.active .burger-icon-bar:nth-child(1) { transform: translateY(5px) rotate(45deg); }
-    .burger-button.active .burger-icon-bar:nth-child(2) { opacity: 0; }
-    .burger-button.active .burger-icon-bar:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+  /* Заголовок */
+  h1 {
+    font-size: clamp(2.2rem, 7vw, 5.5rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, #fff, #b76bff, #7a1fd1, #fff);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite, pop 1s ease-out;
+    text-shadow: 0 0 60px rgba(183,107,255,0.5);
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  @keyframes shine {
+    to { background-position: 300% center; }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    70% { transform: scale(1.15) rotate(3deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
 
-    /* Suggestions и карточки ответов */
-    .suggestions {
-      position: absolute; left: 0; right: 0; margin-top: 8px;
-      background: linear-gradient(180deg,#08111a,#0b1724); border-radius: 10px;
-      box-shadow: 0 6px 22px rgba(2,6,23,0.6); padding: 6px; max-height: 260px; overflow: auto; z-index: 30;
-      transform-origin: top center; opacity: 0; transform: translateY(8px) scale(.995);
-      transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1), opacity calc(var(--trans-dur) * 1.1) ease;
-    }
-    .suggestions.visible { opacity: 1; transform: translateY(0) scale(1); }
+  .age {
+    font-size: clamp(5rem, 18vw, 12rem);
+    font-weight: 900;
+    color: #fff;
+    text-shadow:
+      0 0 20px #b76bff,
+      0 0 40px #b76bff,
+      0 0 80px #7a1fd1,
+      0 0 120px #7a1fd1;
+    animation: pulse 2s ease-in-out infinite, pop 1.4s ease-out;
+    line-height: 1;
+    margin: 10px 0;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.06); filter: brightness(1.3); }
+  }
 
-    .suggestion-item {
-      display: block; width: 100%; text-align: left; background: transparent; border: none;
-      padding: 10px 12px; color: var(--text); border-radius: 8px; cursor: pointer; transform-origin: left center;
-      opacity: 0; transform: translateX(-8px) scale(.995); transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease;
-      will-change: transform, opacity;
-    }
-    .suggestion-item[aria-selected="true"], .suggestion-item:hover { background: rgba(92,108,255,0.12); outline: none; }
-    .suggestion-item.animate-in { opacity: 1; transform: translateX(0) scale(1); }
+  .subtitle {
+    font-size: clamp(1rem, 3vw, 1.8rem);
+    color: #d9b8ff;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 1.2s 1s forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    .answer-box {
-      margin-top: 18px; background: linear-gradient(180deg,#07101a,#09121a); padding: 14px; border-radius: 12px; color: var(--text);
-      box-shadow: 0 6px 20px rgba(2,6,23,0.6); transform-origin: center; opacity: 0; transform: translateY(8px) scale(.995);
-      transition: transform var(--trans-dur) cubic-bezier(.2,.9,.25,1), opacity calc(var(--trans-dur) * 1.05) ease; will-change: opacity, transform;
-    }
-    .answer-box.animate-in { opacity: 1; transform: translateY(0) scale(1); }
+  /* Торт */
+  .cake {
+    font-size: clamp(4rem, 12vw, 8rem);
+    animation: bounce 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px #b76bff);
+    margin: 20px 0;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-25px) rotate(3deg); }
+  }
 
-    /* Hero / logo */
-    .logo { transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease; will-change: transform, opacity; }
-    .logo.animate-in { opacity: 1; transform: translateY(0) scale(1); }
+  /* Карточка с пожеланием */
+  .card {
+    max-width: 700px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(183,107,255,0.4);
+    border-radius: 25px;
+    padding: 35px 30px;
+    margin: 30px 0;
+    box-shadow: 0 20px 60px rgba(122,31,209,0.4), inset 0 0 40px rgba(183,107,255,0.1);
+    opacity: 0;
+    animation: fadeUp 1.2s 1.5s forwards;
+  }
+  .card p {
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    line-height: 1.8;
+    color: #f0e6ff;
+  }
+  .card p + p { margin-top: 15px; }
 
-    /* Project feature card */
-    .project-feature { transform-origin: center; opacity: 0; transform: translateY(12px) scale(.995); transition: transform var(--trans-dur) ease, opacity var(--trans-dur) ease; }
-    .project-feature.animate-in { opacity: 1; transform: translateY(0) scale(1); }
+  .card .highlight {
+    color: #b76bff;
+    font-weight: 700;
+    text-shadow: 0 0 15px rgba(183,107,255,0.8);
+  }
 
-    /* Small float effect for logos and accents */
-    @keyframes floatY {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-      100% { transform: translateY(0); }
-    }
-    .float { animation: floatY 4s ease-in-out infinite; }
+  /* Кнопки */
+  .buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeUp 1.2s 2s forwards;
+  }
 
-    /* Pop-in for header/title */
-    @keyframes popIn {
-      0% { transform: translateY(8px) scale(.98); opacity: 0; }
-      60% { transform: translateY(-4px) scale(1.01); opacity: 1; }
-      100% { transform: translateY(0) scale(1); }
-    }
-    .pop-in { animation: popIn calc(var(--trans-dur) * 1.6) cubic-bezier(.2,.9,.25,1) both; }
+  button {
+    padding: 16px 36px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border: 2px solid #b76bff;
+    border-radius: 50px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+  button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #7a1fd1, #b76bff);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+  button:hover::before { transform: translateX(0); }
+  button:hover {
+    box-shadow: 0 0 30px #b76bff, 0 0 60px rgba(183,107,255,0.5);
+    transform: translateY(-3px);
+  }
+  button:active { transform: scale(0.96); }
 
-    /* Stagger helper — каждый элемент получает задержку через --i */
-    .stagger-child { transition-delay: calc(var(--i, 0) * 60ms); }
+  /* Конфетти canvas */
+  #confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
 
-    /* Modern subtle focus styles */
-    :focus { outline: none; box-shadow: 0 0 0 4px rgba(92,108,255,0.12); border-radius: 8px; }
+  /* Секция с пожеланиями */
+  .wishes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+    width: 100%;
+    margin-top: 40px;
+  }
+  .wish {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(183,107,255,0.3);
+    border-radius: 20px;
+    padding: 25px 20px;
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  .wish.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .wish:hover {
+    transform: translateY(-8px) scale(1.03);
+    border-color: #b76bff;
+    box-shadow: 0 15px 40px rgba(183,107,255,0.4);
+    background: rgba(183,107,255,0.12);
+  }
+  .wish .icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .wish h3 { color: #b76bff; margin-bottom: 8px; font-size: 1.1rem; }
+  .wish p { color: #d9b8ff; font-size: 0.95rem; }
 
-    /* Respect user's reduced motion preference */
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; animation: none !important; }
-      .suggestions, .answer-box, .project-feature, .logo { opacity: 1 !important; transform: none !important; }
-    }
+  /* Финальный текст */
+  .final {
+    font-size: clamp(1.3rem, 4vw, 2.5rem);
+    font-weight: 900;
+    margin-top: 50px;
+    background: linear-gradient(90deg, #fff, #b76bff, #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+    opacity: 0;
+    animation: fadeUp 1.5s 2.5s forwards, shine 3s linear infinite 2.5s;
+  }
 
-    /* Responsive tweaks */
-    @media (max-width: 640px) {
-      .sidebar { width: 84%; }
-      .logo { width: 120px; }
-      .project-feature-main { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+  /* Свечи */
+  .candles {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 1.5rem;
+  }
+  .candle {
+    animation: flicker 0.3s infinite alternate;
+  }
+  @keyframes flicker {
+    from { opacity: 0.8; transform: scaleY(1); }
+    to { opacity: 1; transform: scaleY(1.15); }
+  }
+</style>
 </head>
-<body class="bg">
-  <header class="site-header" style="padding:12px;display:flex;align-items:center;gap:12px;">
-    <button id="burgerBtn" class="burger-button" aria-label="Открыть меню" aria-controls="sidebar" aria-expanded="false">
-      <span class="burger-icon-bar"></span>
-      <span class="burger-icon-bar"></span>
-      <span class="burger-icon-bar"></span>
-    </button>
+<body>
 
-    <h1 id="siteTitle" style="font-size:1rem;margin:0;color:var(--text)" class="pop-in">Classic — Чем можем помочь?</h1>
-  </header>
+<div class="bg"></div>
+<div class="stars" id="stars"></div>
 
-  <div id="menuOverlay" class="menu-overlay hidden" tabindex="-1" aria-hidden="true"></div>
+<div class="container">
+  <h1>С Днём Рождения,<br>Алина! 💜</h1>
 
-  <aside id="sidebar" class="sidebar hidden" aria-hidden="true" role="dialog" aria-label="Главное меню">
-    <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;">
-      <img src="../Logo/Classic_C_Full_Horizontal.png" alt="Classic" class="sidebar-logo" style="height:36px">
-      <button id="sidebarClose" class="sidebar-close" type="button" aria-label="Закрыть меню">×</button>
+  <div class="subtitle">✦ Сегодня твой день ✦</div>
+
+  <div class="age">11</div>
+
+  <div class="cake">
+    🎂
+    <div class="candles">
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
+      <span class="candle">🕯️</span>
     </div>
+  </div>
 
-    <nav class="sidebar-nav" style="display:flex;flex-direction:column;gap:6px;padding:12px;">
-      <button id="menuHome" class="sidebar-item active" type="button" aria-pressed="true">Главная</button>
-      <button id="menuProjects" class="sidebar-item" type="button" aria-pressed="false">Проекты</button>
-    </nav>
-  </aside>
+  <div class="card">
+    <p>Дорогая <span class="highlight">Алина</span>! 💜</p>
+    <p>С днём рождения! Тебе исполняется <span class="highlight">11 лет</span> — прекрасный возраст для новых открытий, мечтаний и приключений!</p>
+    <p>Желаю тебе море радости, верных друзей, отличных оценок и чтобы каждый день приносил что-то волшебное ✨</p>
+    <p>Пусть твои мечты сбываются, а улыбка сияет ярче звёзд! 🌟</p>
+  </div>
 
-  <main class="page-inner" style="padding:24px;max-width:980px;margin:0 auto;">
-    <section class="hero" id="homeSection" aria-labelledby="heroTitle">
-      <div class="logo-container" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <!-- Сделали логотип видимым по умолчанию, чтобы не было "ничего не видно" -->
-        <img src="Classic_Logo.png" alt="Classic" class="logo float" style="width:140px;max-width:40%;opacity:1;transform:none;">
-        <h2 id="heroTitle" class="logo-text" style="color:var(--text);margin:0;">Чем можем помочь?</h2>
+  <div class="buttons">
+    <button onclick="burstConfetti()">🎉 Запустить конфетти</button>
+    <button onclick="showWishes()">💜 Пожелания</button>
+    <button onclick="showFinal()">✨ Сюрприз</button>
+  </div>
 
-        <div class="field-wrapper" style="position:relative;width:100%;max-width:640px;">
-          <label for="helpInput" class="sr-only">Опишите проблему</label>
-          <input id="helpInput" class="animated-input" type="text" placeholder="Опишите проблему" autocomplete="off"
-                 aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);">
+  <div class="wishes" id="wishes">
+    <div class="wish">
+      <div class="icon">🌈</div>
+      <h3>Счастья</h3>
+      <p>Пусть каждый день будет наполнен радостью и смехом!</p>
+    </div>
+    <div class="wish">
+      <div class="icon">⭐</div>
+      <h3>Мечты</h3>
+      <p>Пусть самые заветные желания обязательно сбудутся!</p>
+    </div>
+    <div class="wish">
+      <div class="icon">👑</div>
+      <h3>Успеха</h3>
+      <p>Отличная учёба и победы во всех начинаниях!</p>
+    </div>
+    <div class="wish">
+      <div class="icon">💜</div>
+      <h3>Любви</h3>
+      <p>Пусть тебя окружают заботой близкие и друзья!</p>
+    </div>
+  </div>
 
-          <div id="suggestions" class="suggestions hidden" role="listbox" aria-label="Подсказки"></div>
-        </div>
+  <div class="final" id="final"></div>
+</div>
 
-        <div id="answerBox" class="answer-box hidden" role="region" aria-live="polite"></div>
-      </div>
-    </section>
+<canvas id="confetti"></canvas>
 
-    <section class="projects-section" id="projectsSection" aria-hidden="true" style="margin-top:28px;">
-      <div id="projectFeature" class="project-feature hidden" style="max-width:720px;margin:0 auto;">
-        <div class="project-feature-title" style="color:var(--text);font-weight:600;margin-bottom:8px;">Наши проекты</div>
-        <div class="project-feature-main" style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;">
-          <img src="LumiTranslate_Logo.png" alt="LumiTranslate" class="project-feature-logo" style="height:68px;">
-          <div class="project-feature-info" style="flex:1;">
-            <div class="project-feature-name" style="color:var(--text);font-weight:700;">LumiTranslate</div>
-            <p class="project-feature-caption" style="color:rgba(255,255,255,0.75);margin:6px 0 0 0;">Умный переводчик команды Classic — быстро и удобно.</p>
-          </div>
-          <a href="https://maksimsuhomlinov37-hue.github.io/LumiTranslate/" target="_blank" rel="noopener noreferrer" class="project-feature-action" style="color:var(--accent);text-decoration:underline;">Открыть LumiTranslate</a>
-        </div>
-      </div>
-    </section>
-  </main>
+<script>
+  // Звёзды
+  const starsBox = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    starsBox.appendChild(s);
+  }
 
-  <script type="module">
-    // Модуль ES — современный, изолированный код.
-    const suggestionsData = [
-      {
-        label: 'Как переводить с помощью LumiTranslate',
-        answer: '1) Перейдите на сайт LumiTranslate; 2) Вставьте или введите текст, который нужно перевести; 3) Выберите язык и нажмите кнопку "Перевести"; 4) Скопируйте результат или загрузите файл. Если возникнут вопросы — пишите в Issues проекта на GitHub.'
-      },
-      {
-        label: 'Что такое LumiTranslate',
-        answer: 'LumiTranslate — это инструмент быстрой локальной и онлайн-переводки, созданный командой Classic. Поддерживает несколько языков и удобный интерфейс для пакетной обработки.'
-      },
-      {
-        label: 'Что такое Company Classic',
-        answer: 'Company Classic — студия дизайна и веб-разработки, создающая стильные проекты с акцентом на UX и производительность. Мы делаем сайты, приложения и инструменты для команд.'
-      },
-      {
-        label: 'Как связаться с командой Classic',
-        answer: 'Вы можете написать нам через форму обратной связи на сайте проекта, открыть GitHub-проект и создать issue или отправить PR. Также можно найти контактную информацию в репозитории или на странице проекта.'
+  // Шары
+  const colors = ['#7a1fd1', '#b76bff', '#ffffff', '#d9b8ff', '#4b0082'];
+  for (let i = 0; i < 15; i++) {
+    const b = document.createElement('div');
+    b.className = 'balloon';
+    b.style.left = Math.random() * 100 + '%';
+    b.style.background = `radial-gradient(circle at 30% 30%, #fff, ${colors[i % colors.length]})`;
+    b.style.animationDelay = Math.random() * 12 + 's';
+    b.style.animationDuration = (10 + Math.random() * 8) + 's';
+    b.style.transform = `scale(${0.6 + Math.random() * 0.8})`;
+    document.body.appendChild(b);
+  }
+
+  // Конфетти
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  let confettis = [];
+  let animId = null;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function burstConfetti() {
+    const confColors = ['#b76bff', '#7a1fd1', '#ffffff', '#d9b8ff', '#4b0082', '#e0c3ff'];
+    for (let i = 0; i < 220; i++) {
+      confettis.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * 100,
+        vx: (Math.random() - 0.5) * 6,
+        vy: Math.random() * 4 + 2,
+        size: Math.random() * 10 + 5,
+        color: confColors[Math.floor(Math.random() * confColors.length)],
+        rot: Math.random() * Math.PI,
+        rotSpeed: (Math.random() - 0.5) * 0.3,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle'
+      });
+    }
+    if (!animId) animId = requestAnimationFrame(animate);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettis = confettis.filter(c => c.y < canvas.height + 50);
+
+    for (const c of confettis) {
+      c.x += c.vx;
+      c.y += c.vy;
+      c.vy += 0.05;
+      c.vx *= 0.99;
+      c.rot += c.rotSpeed;
+
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.rotate(c.rot);
+      ctx.fillStyle = c.color;
+      ctx.shadowColor = c.color;
+      ctx.shadowBlur = 8;
+
+      if (c.shape === 'rect') {
+        ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.6);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, c.size / 2, 0, Math.PI * 2);
+        ctx.fill();
       }
-    ];
-
-    // Утилиты
-    const el = (sel, ctx = document) => ctx.querySelector(sel);
-    const create = (tag, props = {}) => Object.assign(document.createElement(tag), props);
-
-    // Дебаунс для ввода
-    function debounce(fn, wait = 200) {
-      let t;
-      return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), wait);
-      };
+      ctx.restore();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const input = el('#helpInput');
-      const suggestionsBox = el('#suggestions');
-      const answerBox = el('#answerBox');
-      const burgerBtn = el('#burgerBtn');
-      const sidebar = el('#sidebar');
-      const sidebarClose = el('#sidebarClose');
-      const overlay = el('#menuOverlay');
-      const menuHome = el('#menuHome');
-      const menuProjects = el('#menuProjects');
-      const projectFeature = el('#projectFeature');
-      const homeSection = el('#homeSection');
-      const projectsSection = el('#projectsSection');
-      const logoEl = el('.logo');
-      const siteTitle = el('#siteTitle');
+    if (confettis.length > 0) {
+      animId = requestAnimationFrame(animate);
+    } else {
+      animId = null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
 
-      // Доступность: отслеживаем поддерживает ли пользователь reduced motion
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Считываем данные подсказок
-      function filterSuggestions(query) {
-        const q = (query || '').trim().toLowerCase();
-        if (!q) return suggestionsData.slice(0, 6); // популярные/первые
-        return suggestionsData.filter(s => s.label.toLowerCase().includes(q)).slice(0, 8);
-      }
-
-      // Рендер подсказок (используем role=listbox/option)
-      function renderSuggestions(items) {
-        suggestionsBox.innerHTML = '';
-        if (!items.length) {
-          suggestionsBox.classList.remove('visible');
-          suggestionsBox.classList.add('hidden');
-          input.setAttribute('aria-expanded', 'false');
-          return;
-        }
-
-        items.forEach((item, index) => {
-          const btn = create('button', {
-            type: 'button',
-            className: 'suggestion-item stagger-child',
-            textContent: item.label,
-          });
-          btn.setAttribute('role', 'option');
-          btn.dataset.index = index;
-          // Задаём индивидуальную задержку для каждого элемента
-          btn.style.setProperty('--i', index);
-
-          btn.addEventListener('click', () => selectSuggestion(item, btn));
-          btn.addEventListener('keydown', (e) => {
-            // Перенос навигации на клавиатуре внутри списка
-            if (e.key === 'ArrowDown') { focusNextSuggestion(btn); e.preventDefault(); }
-            if (e.key === 'ArrowUp') { focusPrevSuggestion(btn); e.preventDefault(); }
-            if (e.key === 'Enter') { selectSuggestion(item, btn); e.preventDefault(); }
-            if (e.key === 'Escape') { hideSuggestions(); input.focus(); }
-          });
-
-          suggestionsBox.appendChild(btn);
-
-          // Анимация появления с небольшой задержкой
-          requestAnimationFrame(() => {
-            btn.classList.add('animate-in');
-          });
-        });
-
-        suggestionsBox.classList.remove('hidden');
-        // Даем класс visible для общего контейнера
-        requestAnimationFrame(() => suggestionsBox.classList.add('visible'));
-
-        input.setAttribute('aria-expanded', 'true');
-      }
-
-      function focusNextSuggestion(current) {
-        const list = Array.from(suggestionsBox.querySelectorAll('.suggestion-item'));
-        if (!list.length) return;
-        const i = list.indexOf(current);
-        const next = list[(i + 1) % list.length];
-        next.focus();
-      }
-      function focusPrevSuggestion(current) {
-        const list = Array.from(suggestionsBox.querySelectorAll('.suggestion-item'));
-        if (!list.length) return;
-        const i = list.indexOf(current);
-        const prev = list[(i - 1 + list.length) % list.length];
-        prev.focus();
-      }
-
-      function selectSuggestion(item, btn = null) {
-        input.value = item.label;
-        showAnswer(item.answer);
-        hideSuggestions();
-        input.setAttribute('aria-expanded', 'false');
-        if (btn) btn.setAttribute('aria-selected', 'true');
-        input.focus();
-      }
-
-      function showAnswer(text) {
-        answerBox.textContent = text;
-        answerBox.classList.remove('hidden');
-        // Анимация показа
-        requestAnimationFrame(() => answerBox.classList.add('animate-in'));
-      }
-
-      function hideSuggestions() {
-        suggestionsBox.classList.remove('visible');
-        input.setAttribute('aria-expanded', 'false');
-        // Скрываем с анимацией
-        setTimeout(() => suggestionsBox.classList.add('hidden'), 220);
-      }
-
-      // Обработчик ввода с дебаунсом
-      const onInput = debounce((value) => {
-        const items = filterSuggestions(value);
-        renderSuggestions(items);
-      }, 160);
-
-      input.addEventListener('input', (e) => {
-        answerBox.classList.add('hidden');
-        answerBox.classList.remove('animate-in');
-        onInput(e.target.value);
-      });
-
-      // Фокус/клавиатура: стрелки на элементе input открывают подсказки
-      input.addEventListener('keydown', (e) => {
-        const visible = !suggestionsBox.classList.contains('hidden');
-        if (e.key === 'ArrowDown') {
-          if (!visible) renderSuggestions(filterSuggestions(input.value));
-          const first = suggestionsBox.querySelector('.suggestion-item');
-          if (first) first.focus();
-          e.preventDefault();
-        }
-        if (e.key === 'Escape') {
-          hideSuggestions();
-          input.blur();
-        }
-        if (e.key === 'Enter') {
-          // Если подсказок нет — можно использовать первый совпадающий ответ автоматически
-          const items = filterSuggestions(input.value);
-          if (items.length === 1) {
-            selectSuggestion(items[0]);
-            e.preventDefault();
-          }
-        }
-      });
-
-      input.addEventListener('focus', () => {
-        const items = filterSuggestions(input.value);
-        if (items.length) renderSuggestions(items);
-      });
-
-      input.addEventListener('blur', () => {
-        // небольшая задержка чтобы обработать клик по подсказке
-        setTimeout(() => hideSuggestions(), 120);
-      });
-
-      // ===================== Sidebar (доступный) =====================
-      function openSidebar() {
-        sidebar.classList.remove('hidden');
-        overlay.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          sidebar.classList.add('open');
-          overlay.classList.add('open');
-        });
-
-        burgerBtn.classList.add('active');
-        burgerBtn.setAttribute('aria-expanded', 'true');
-        sidebar.setAttribute('aria-hidden', 'false');
-        overlay.setAttribute('aria-hidden', 'false');
-
-        // Фокус на первый элемент меню
-        const first = sidebar.querySelector('.sidebar-item');
-        if (first) first.focus();
-
-        // Включаем ловушку фокуса
-        trapFocus(sidebar);
-      }
-
-      function closeSidebar() {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('open');
-        burgerBtn.classList.remove('active');
-        burgerBtn.setAttribute('aria-expanded', 'false');
-
-        overlay.setAttribute('aria-hidden', 'true');
-        sidebar.setAttribute('aria-hidden', 'true');
-
-        // Скрываем после анимации
-        setTimeout(() => {
-          if (!sidebar.classList.contains('open')) sidebar.classList.add('hidden');
-          if (!overlay.classList.contains('open')) overlay.classList.add('hidden');
-        }, 320);
-
-        // Убираем ловушку фокуса (она сама прекратит работать после закрытия)
-        releaseFocusTrap();
-
-        // Вернуть фокус на кнопку
-        burgerBtn.focus();
-      }
-
-      burgerBtn.addEventListener('click', () => {
-        const expanded = burgerBtn.getAttribute('aria-expanded') === 'true';
-        if (expanded) closeSidebar(); else openSidebar();
-      });
-      sidebarClose.addEventListener('click', closeSidebar);
-      overlay.addEventListener('click', closeSidebar);
-
-      // Закрытие ESC глобально
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          // Закрыть меню или подсказки
-          if (!sidebar.classList.contains('hidden') && sidebar.classList.contains('open')) {
-            closeSidebar();
-          } else {
-            hideSuggestions();
-          }
-        }
-      });
-
-      // Меню пункты
-      function activateMenuItem(button) {
-        menuHome.classList.remove('active');
-        menuProjects.classList.remove('active');
-        menuHome.setAttribute('aria-pressed', 'false');
-        menuProjects.setAttribute('aria-pressed', 'false');
-
-        button.classList.add('active');
-        button.setAttribute('aria-pressed', 'true');
-      }
-
-      function showHome() {
-        homeSection.removeAttribute('hidden');
-        projectsSection.setAttribute('aria-hidden', 'true');
-        projectFeature.classList.add('hidden');
-      }
-
-      function showProjects() {
-        homeSection.setAttribute('aria-hidden', 'true');
-        projectsSection.removeAttribute('aria-hidden');
-        projectFeature.classList.remove('hidden');
-      }
-
-      menuHome.addEventListener('click', () => {
-        activateMenuItem(menuHome);
-        closeSidebar();
-        showHome();
-      });
-
-      menuProjects.addEventListener('click', () => {
-        activateMenuItem(menuProjects);
-        closeSidebar();
-        showProjects();
-      });
-
-      // ===================== Focus trap для sidebar =====================
-      let prevFocused = null;
-      let focusTrap = null;
-
-      function trapFocus(container) {
-        prevFocused = document.activeElement;
-        const focusableSelector = [
-          'a[href]', 'area[href]', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])',
-          'button:not([disabled])', 'iframe', '[tabindex]:not([tabindex="-1"])'
-        ].join(',');
-
-        const nodes = Array.from(container.querySelectorAll(focusableSelector));
-        if (!nodes.length) return;
-
-        const first = nodes[0], last = nodes[nodes.length - 1];
-        focusTrap = (e) => {
-          if (e.key !== 'Tab') return;
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault(); last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault(); first.focus();
-          }
-        };
-        document.addEventListener('keydown', focusTrap);
-      }
-
-      function releaseFocusTrap() {
-        if (focusTrap) {
-          document.removeEventListener('keydown', focusTrap);
-          focusTrap = null;
-        }
-        if (prevFocused) {
-          prevFocused.focus(); prevFocused = null;
-        }
-      }
-
-      // ===================== ANIMATIONS INIT =====================
-      // Показываем элементы с анимацией при загрузке и при появлении в viewport
-      function animateOnLoad() {
-        if (!reduceMotion) {
-          // Поп — заголовок
-          siteTitle.classList.add('pop-in');
-
-          // Логотип
-          if (logoEl) setTimeout(() => logoEl.classList.add('animate-in'), 150);
-
-          // Входное поле
-          if (input) setTimeout(() => input.classList.add('animate-in'), 220);
-
-          // Секция проектов — если видна
-          if (projectFeature && !projectFeature.classList.contains('hidden')) projectFeature.classList.add('animate-in');
-        } else {
-          // Если пользователь предпочитает без анимаций — сразу показать
-          if (logoEl) logoEl.style.opacity = 1; if (input) input.style.opacity = 1; if (answerBox) answerBox.style.opacity = 1;
-        }
-      }
-
-      // Intersection observer для ленивой анимации при scroll
-      if (!reduceMotion && 'IntersectionObserver' in window) {
-        const io = new IntersectionObserver((entries) => {
-          entries.forEach(e => {
-            if (e.isIntersecting) {
-              e.target.classList.add('animate-in');
-              io.unobserve(e.target);
-            }
-          });
-        }, { threshold: 0.18 });
-
-        // Наблюдаем за карточкой проекта и за ответом
-        const toObserve = [projectFeature, answerBox, logoEl];
-        toObserve.forEach(node => { if (node) io.observe(node); });
-      }
-
-      // Инициализация — прячем секции, показываем главную
-      showHome();
-      // Запускаем стартовые анимации
-      requestAnimationFrame(animateOnLoad);
-
+  // Показ пожеланий
+  function showWishes() {
+    const wishes = document.querySelectorAll('.wish');
+    wishes.forEach((w, i) => {
+      setTimeout(() => w.classList.add('show'), i * 200);
     });
-  </script>
+  }
+
+  // Финальный текст
+  function showFinal() {
+    const f = document.getElementById('final');
+    f.textContent = '🎉 Алина, ты — звезда! Сияй ярко! 💜✨';
+    f.style.opacity = '1';
+    burstConfetti();
+    setTimeout(burstConfetti, 400);
+    setTimeout(burstConfetti, 800);
+  }
+
+  // Авто-конфетти при загрузке
+  window.addEventListener('load', () => {
+    setTimeout(burstConfetti, 500);
+    setTimeout(showWishes, 2500);
+  });
+
+  // Клик в любом месте — конфетти
+  document.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'BUTTON') burstConfetti();
+  });
+</script>
+
 </body>
-</html>
+  </html>
